@@ -5,16 +5,26 @@ import { Paper, Typography, useMediaQuery } from '@material-ui/core';
 import LocationOnOutlinedIcon from '@material-ui/icons/LocationOnOutlined';
 import Rating from '@material-ui/lab/Rating';
 
-function Map({ setCoordinates, setBounds, coordinates, places, setChildClicked }) {
+function Map({ setCoordinates, setBounds, coordinates, places, setChildClicked, weatherData }) {
   const isMobile = useMediaQuery('(min-width:600px)')
   const classes = useStyles()
+  console.log('weatherData', weatherData)
   const cek = () => {
     console.log('places', places)
   }
   // const coordinates = { lat: 0, lng: 0 }
   return (
     <div className={classes.mapContainer}>
-      <div><button onClick={() => cek()}>cek 1</button></div>
+      <div>
+        {/* <button onClick={() => cek()}>cek 1</button> */}
+          {weatherData ? (
+            <Typography variant='h5'>
+              Weather : {weatherData?.weather[0].main}
+            </Typography>
+          ) : (
+            null
+          )}
+      </div>
       <GoogleMapReact
         bootstrapURLKeys={{key: ''}}
         defaultCenter={coordinates}
@@ -48,6 +58,11 @@ function Map({ setCoordinates, setBounds, coordinates, places, setChildClicked }
                   <Rating name="read-only" size="small" value={Number(place.rating)} readOnly />
                 </Paper>
               )}
+          </div>
+        ))}
+        {weatherData?.weather?.length && weatherData.weather.map((data, i) => (
+          <div key={i} lat={weatherData.coord.lat} lng={weatherData.coord.lon}>
+            <img src={`http://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`} height="70px" />
           </div>
         ))}
       </GoogleMapReact>

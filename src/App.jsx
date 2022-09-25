@@ -1,6 +1,6 @@
 import { CssBaseline, Grid } from '@material-ui/core'
 import React, { useEffect, useState } from 'react'
-import { getPlacesData } from './api'
+import { getPlacesData, getWeatherData } from './api'
 import Header from './components/Header/Header'
 import List from './components/List/List'
 import Map from './components/Map/Map'
@@ -8,6 +8,7 @@ import Map from './components/Map/Map'
 function App() {
   const [places, setPlaces] = useState([])
   const [filteredPlaces, setFilteredPlaces] = useState([])
+  const [weatherData, setWeatherData] = useState(null)
   const [coordinates, setCoordinates] = useState({})
   const [bounds, setBounds] = useState(null)
   const [coords, setCoords] = useState({});
@@ -26,9 +27,12 @@ function App() {
   },[])
 
   useEffect(() => {
-    console.log('useEffect', bounds)
     if (bounds !== null) {
       setIsLoading(true)
+      getWeatherData(coordinates.lat, coordinates.lng)
+      .then((data) => {
+        setWeatherData(data)
+      })
       getPlacesData(type, bounds.sw, bounds.ne)
         .then((data) => {
           console.log(data)
@@ -45,16 +49,21 @@ function App() {
   },[rating])
  
   const getResto = () => {
-    if (bounds.sw && bounds.ne) {
-      setIsLoading(true)
-      getPlacesData(type, bounds.sw, bounds.ne)
-        .then((data) => {
-          console.log(data)
-          setPlaces(data?.filter((place) => place.name && place.num_reviews > 0))
-          setFilteredPlaces([])
-          setIsLoading(false)
-        })
-    }
+    // console.log('bounds', bounds, 'coordinates', coordinates)
+    getWeatherData(coordinates.lat, coordinates.lng)
+      .then((data) => {
+        setWeatherData(data)
+      })
+    // if (bounds.sw && bounds.ne) {
+    //   setIsLoading(true)
+    //   getPlacesData(type, bounds.sw, bounds.ne)
+    //     .then((data) => {
+    //       console.log(data)
+    //       setPlaces(data?.filter((place) => place.name && place.num_reviews > 0))
+    //       setFilteredPlaces([])
+    //       setIsLoading(false)
+    //     })
+    // }
   }
 
   const onLoad = (autoC) => setAutocomplete(autoC);
@@ -72,7 +81,7 @@ function App() {
       <Header setCoordinates={setCoordinates} />
       <Grid container spacing={3} style={{ width: '100%' }}>
         <Grid item xs={12} md={4}>
-          <button onClick={() => getResto()}>get</button>
+          {/* <button onClick={() => getResto()}>get</button> */}
           <List
             places={filteredPlaces.length ? filteredPlaces : places}
             childClicked={childClicked}
@@ -89,6 +98,7 @@ function App() {
             coordinates={coordinates}
             places={filteredPlaces.length ? filteredPlaces : places}
             setChildClicked={setChildClicked}
+            weatherData={weatherData}
           />
         </Grid>
       </Grid>
