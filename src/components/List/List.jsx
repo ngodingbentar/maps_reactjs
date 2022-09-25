@@ -3,11 +3,8 @@ import React, { useState, useEffect, createRef } from 'react'
 import PlaceDetails from '../PlaceDetails/PlaceDetails'
 import useStyles from './Styles'
 
-function List({places, childClicked, isLoading}) {
+function List({places, childClicked, isLoading, type, setType, rating, setRating}) {
   const classes = useStyles()
-  const [type, setType] = useState('restaurants')
-  const [rating, setRating] = useState('')
-  
   const [elRefs, setElRefs] = useState([]);
 
   useEffect(() => {
@@ -35,12 +32,12 @@ function List({places, childClicked, isLoading}) {
           <FormControl className={classes.formControl}>
             <InputLabel>Rating</InputLabel>
             <Select value={rating} onChange={(e) => setRating(e.target.value)}>
-              <MenuItem value={0}>0</MenuItem>
+              <MenuItem value={0}>All</MenuItem>
               <MenuItem value={1}>1</MenuItem>
               <MenuItem value={2}>2</MenuItem>
               <MenuItem value={3}>3</MenuItem>
               <MenuItem value={4}>4</MenuItem>
-              <MenuItem value={5}>5</MenuItem>
+              <MenuItem value={4.5}>4.5</MenuItem>
             </Select>
           </FormControl>
           <Grid container spacing={3} className={classes.list} >
