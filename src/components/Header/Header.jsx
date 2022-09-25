@@ -4,7 +4,6 @@ import { Autocomplete } from '@react-google-maps/api'
 import React, { useState } from 'react'
 import useStyles from './Styles'
 
-// function Header({ onPlaceChanged, onLoad }) {
 function Header({setCoordinates}) {
   const classes = useStyles()
   const [autocomplete, setAutocomplete] = useState(null);

@@ -11,19 +11,17 @@ function App() {
   const [weatherData, setWeatherData] = useState(null)
   const [coordinates, setCoordinates] = useState({})
   const [bounds, setBounds] = useState(null)
-  const [coords, setCoords] = useState({});
   const [childClicked, setChildClicked] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState('restaurants')
   const [rating, setRating] = useState('')
-  const [autocomplete, setAutocomplete] = useState(null);
 
   useEffect(() => {
-    // navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
-    //   setCoordinates({ lat: latitude, lng: longitude })
-    //   console.log('useEffect', coordinates)
-    // })
-    setCoordinates({lat: 51.507351, lng: -0.127758})
+    navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
+      setCoordinates({ lat: latitude, lng: longitude })
+      console.log('useEffect', coordinates)
+    })
+    // setCoordinates({lat: 51.507351, lng: -0.127758})
   },[])
 
   useEffect(() => {
@@ -47,33 +45,6 @@ function App() {
     const filteredPlaces = places.filter((place) => place.rating > rating)
     setFilteredPlaces(filteredPlaces)
   },[rating])
- 
-  const getResto = () => {
-    // console.log('bounds', bounds, 'coordinates', coordinates)
-    getWeatherData(coordinates.lat, coordinates.lng)
-      .then((data) => {
-        setWeatherData(data)
-      })
-    // if (bounds.sw && bounds.ne) {
-    //   setIsLoading(true)
-    //   getPlacesData(type, bounds.sw, bounds.ne)
-    //     .then((data) => {
-    //       console.log(data)
-    //       setPlaces(data?.filter((place) => place.name && place.num_reviews > 0))
-    //       setFilteredPlaces([])
-    //       setIsLoading(false)
-    //     })
-    // }
-  }
-
-  const onLoad = (autoC) => setAutocomplete(autoC);
-
-  const onPlaceChanged = () => {
-    const lat = autocomplete.getPlace().geometry.location.lat();
-    const lng = autocomplete.getPlace().geometry.location.lng();
-
-    setCoords({ lat, lng });
-  };
 
   return (
     <>
@@ -81,7 +52,6 @@ function App() {
       <Header setCoordinates={setCoordinates} />
       <Grid container spacing={3} style={{ width: '100%' }}>
         <Grid item xs={12} md={4}>
-          {/* <button onClick={() => getResto()}>get</button> */}
           <List
             places={filteredPlaces.length ? filteredPlaces : places}
             childClicked={childClicked}
