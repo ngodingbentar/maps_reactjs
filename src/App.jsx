@@ -10,10 +10,12 @@ function App() {
   const [filteredPlaces, setFilteredPlaces] = useState([])
   const [coordinates, setCoordinates] = useState({})
   const [bounds, setBounds] = useState(null)
+  const [coords, setCoords] = useState({});
   const [childClicked, setChildClicked] = useState(null)
   const [isLoading, setIsLoading] = useState(false);
   const [type, setType] = useState('restaurants')
   const [rating, setRating] = useState('')
+  const [autocomplete, setAutocomplete] = useState(null);
 
   useEffect(() => {
     // navigator.geolocation.getCurrentPosition(({ coords: { latitude, longitude } }) => {
@@ -23,32 +25,51 @@ function App() {
     setCoordinates({lat: 51.507351, lng: -0.127758})
   },[])
 
-  // useEffect(() => {
-  //   getPlacesData(bounds.sw, bounds.ne)
-  //     .then((data) => {
-  //       console.log(data)
-  //       setPlaces(data)
-  //     })
-  // },[type, coordinates, bounds])
+  useEffect(() => {
+    console.log('useEffect', bounds)
+    if (bounds !== null) {
+      setIsLoading(true)
+      getPlacesData(type, bounds.sw, bounds.ne)
+        .then((data) => {
+          console.log(data)
+          setPlaces(data?.filter((place) => place.name && place.num_reviews > 0))
+          setFilteredPlaces([])
+          setIsLoading(false)
+        })
+    }
+  },[type, bounds])
 
   useEffect(() => {
     const filteredPlaces = places.filter((place) => place.rating > rating)
     setFilteredPlaces(filteredPlaces)
   },[rating])
+ 
   const getResto = () => {
-    setIsLoading(true)
-    getPlacesData(type, bounds.sw, bounds.ne)
-      .then((data) => {
-        console.log(data)
-        setPlaces(data)
-        setFilteredPlaces([])
-        setIsLoading(false)
-      })
+    if (bounds.sw && bounds.ne) {
+      setIsLoading(true)
+      getPlacesData(type, bounds.sw, bounds.ne)
+        .then((data) => {
+          console.log(data)
+          setPlaces(data?.filter((place) => place.name && place.num_reviews > 0))
+          setFilteredPlaces([])
+          setIsLoading(false)
+        })
+    }
   }
+
+  const onLoad = (autoC) => setAutocomplete(autoC);
+
+  const onPlaceChanged = () => {
+    const lat = autocomplete.getPlace().geometry.location.lat();
+    const lng = autocomplete.getPlace().geometry.location.lng();
+
+    setCoords({ lat, lng });
+  };
+
   return (
     <>
       <CssBaseline />
-      <Header />
+      <Header setCoordinates={setCoordinates} />
       <Grid container spacing={3} style={{ width: '100%' }}>
         <Grid item xs={12} md={4}>
           <button onClick={() => getResto()}>get</button>
